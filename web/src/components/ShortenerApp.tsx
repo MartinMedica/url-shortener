@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { AlertCircle, Check, Copy, Link2, Loader2 } from "lucide-react";
+import { AlertCircle, Check, Copy, Link, Loader2 } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ export default function ShortenerApp({ apiUrl }: ShortenerAppProps) {
   }
 
   return (
-    <main className="min-h-screen bg-indigo-100 px-5 py-6 sm:px-8">
+    <main className="min-h-screen bg-indigo-50 px-5 py-6 sm:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col justify-center gap-10 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <section className="max-w-xl">
           <h1 className="text-5xl font-black leading-[0.95] tracking-normal text-foreground sm:text-7xl">
@@ -125,7 +125,7 @@ export default function ShortenerApp({ apiUrl }: ShortenerAppProps) {
                       </>
                     ) : (
                       <>
-                        <Link2 />
+                        <Link />
                         Acortar
                       </>
                     )}
