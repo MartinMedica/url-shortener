@@ -34053,10 +34053,16 @@ var TABLE_NAME = "shorten-urls";
 var DOMAIN = "http://shorten.martinmedica.com";
 var client = new import_client_dynamodb.DynamoDBClient({ region: REGION });
 var db = import_lib_dynamodb.DynamoDBDocumentClient.from(client);
+var corsHeaders = {
+  "Access-Control-Allow-Origin": "https://shorten.martinmedica.com",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+};
 function jsonResponse(statusCode, body) {
   return {
     statusCode,
     headers: {
+      ...corsHeaders,
       "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
@@ -34091,7 +34097,7 @@ async function handleCreate(event) {
   );
   return jsonResponse(201, {
     code,
-    shortUrl: `${DOMAIN}/${code}`
+    shortUrl: `${DOMAIN}/r/${code}`
   });
 }
 async function handleRedirect(event) {
@@ -34111,6 +34117,7 @@ async function handleRedirect(event) {
   return {
     statusCode: 301,
     headers: {
+      ...corsHeaders,
       Location: result.Item.originalUrl
     },
     body: ""
@@ -34124,6 +34131,13 @@ var handler = async (event) => {
     }
     if (method === "GET") {
       return await handleRedirect(event);
+    }
+    if (method === "OPTIONS") {
+      return {
+        statusCode: 204,
+        headers: corsHeaders,
+        body: ""
+      };
     }
     return jsonResponse(405, { error: "method not allowed" });
   } catch (err2) {
