@@ -1,0 +1,87 @@
+---
+const apiUrl = import.meta.env.PUBLIC_API_URL;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>URL Shortener</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <main>
+      <h1>Acortador de URLs</h1>
+
+      <form id="shorten-form">
+        <input
+          id="url-input"
+          name="url"
+          type="url"
+          placeholder="https://example.com"
+          required
+        />
+
+        <button type="submit">Acortar</button>
+      </form>
+
+      <p id="error" hidden></p>
+
+      <div id="result" hidden>
+        <p>URL corta:</p>
+        <a id="short-url" href="" target="_blank" rel="noreferrer"></a>
+        <button id="copy-button" type="button">Copiar</button>
+      </div>
+    </main>
+
+    <script define:vars={{ apiUrl }}>
+      const form = document.querySelector("#shorten-form");
+      const input = document.querySelector("#url-input");
+      const error = document.querySelector("#error");
+      const result = document.querySelector("#result");
+      const shortUrl = document.querySelector("#short-url");
+      const copyButton = document.querySelector("#copy-button");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        error.hidden = true;
+        result.hidden = true;
+
+        const url = input.value.trim();
+
+        try {
+          const res = await fetch(`${apiUrl}/shorten`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "No se pudo acortar la URL");
+          }
+
+          shortUrl.href = data.shortUrl;
+          shortUrl.textContent = data.shortUrl;
+          result.hidden = false;
+        } catch (err) {
+          error.textContent = err.message;
+          error.hidden = false;
+        }
+      });
+
+      copyButton.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(shortUrl.href);
+        copyButton.textContent = "Copiado";
+
+        setTimeout(() => {
+          copyButton.textContent = "Copiar";
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>
